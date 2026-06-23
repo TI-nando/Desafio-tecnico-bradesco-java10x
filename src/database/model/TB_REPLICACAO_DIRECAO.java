@@ -3,7 +3,7 @@ package database.model;
 public class TB_REPLICACAO_DIRECAO {
 
     private long id;
-    private String descricao_origem;
+    private String direcao_origem;
     private String direcao_destino;
     private String usuario_origem;
     private String usuario_destino;
@@ -24,12 +24,12 @@ public class TB_REPLICACAO_DIRECAO {
         this.id = id;
     }
 
-    public String getDescricao_origem() {
-        return descricao_origem;
+    public String getDirecao_origem() {
+        return direcao_origem;
     }
 
-    public void setDescricao_origem(String descricao_origem) {
-        this.descricao_origem = descricao_origem;
+    public void setDirecao_origem(String direcao_origem) {
+        this.direcao_origem = direcao_origem;
     }
 
     public String getDirecao_destino() {

@@ -1,6 +1,6 @@
 package database.model;
 
-public class TB_REPLICA_PROCESSO_TABELA {
+public class TB_REPLICACAO_PROCESSO_TABELA {
 
     private long  id;
     private String processo_id;
@@ -10,7 +10,7 @@ public class TB_REPLICA_PROCESSO_TABELA {
     private boolean habilitado;
     private String ds_where;
 
-    public TB_REPLICA_PROCESSO_TABELA() {
+    public TB_REPLICACAO_PROCESSO_TABELA() {
 
     }
 
@@ -22,11 +22,11 @@ public class TB_REPLICA_PROCESSO_TABELA {
         this.id = id;
     }
 
-    public String getProcesso_id() {
+    public long getProcesso_id() {
         return processo_id;
     }
 
-    public void setProcesso_id(String processo_id) {
+    public void setProcesso_id(long processo_id) {
         this.processo_id = processo_id;
     }
 
