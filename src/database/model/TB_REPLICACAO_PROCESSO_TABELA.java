@@ -3,7 +3,7 @@ package database.model;
 public class TB_REPLICACAO_PROCESSO_TABELA {
 
     private long  id;
-    private String processo_id;
+    private long processo_id;
     private String table_origem;
     private String table_destino;
     private int ordem;
