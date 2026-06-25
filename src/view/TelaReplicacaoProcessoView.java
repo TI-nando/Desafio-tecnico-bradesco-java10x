@@ -1,8 +1,19 @@
 package view;
 
+import database.dao.ReplicacaoProcessoDAO;
+import database.model.TB_REPLICACAO_PROCESSO;
+
 import javax.swing.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class TelaReplicacaoProcessoView extends JFrame {
+
+    private enum ModoTela { NENHUM, INSERT, UPDATE}
+    private ModoTela modoTela = ModoTela.NENHUM;
+
+    private final Connection conn;
+    private final ReplicacaoProcessoDAO dao;
 
     private JTextField txfId;
     private JTextField txfProcesso;
@@ -14,7 +25,11 @@ public class TelaReplicacaoProcessoView extends JFrame {
     private JButton btnBuscar;
     private JButton btnExcluir;
 
-    public TelaReplicacaoProcessoView () {
+    public TelaReplicacaoProcessoView (Connection conn) throws SQLException {
+
+        this.conn = conn;
+        this.dao = new ReplicacaoProcessoDAO(conn);
+
         setTitle("Cadastro De Processo");
         setSize(620, 320);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -69,9 +84,141 @@ public class TelaReplicacaoProcessoView extends JFrame {
         chkHabilitado.setBounds(10, 175, 120, 25);
         getContentPane().add(chkHabilitado);
 
+        // --- Inicia com os componentes desabilitados ---
+        txfId.setEnabled(false);
+        txfProcesso.setEnabled(false);
+        txfDescricao.setEnabled(false);
+        chkHabilitado.setSelected(false);
+        btnSalvar.setEnabled(false);
+        btnExcluir.setEnabled(false);
+
+        // --- Ação de adicionar ---
+        btnAdicionar.addActionListener(e -> {
+            modoTela = ModoTela.INSERT;
+
+            txfId.setText("");
+            txfProcesso.setText("");
+            txfDescricao.setText("");
+            chkHabilitado.setSelected(true);
+
+            txfId.setEnabled(true);
+            txfProcesso.setEnabled(true);
+            txfDescricao.setEnabled(true);
+            chkHabilitado.setSelected(true);
+            btnSalvar.setEnabled(true);
+            btnExcluir.setEnabled(true);
+
+        });
+
+        // --- Ação de Salvar ---
+        btnSalvar.addActionListener(e -> {
+            try {
+                if (txfProcesso.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Informe o Processo");
+                    return;
+                }
+
+                // Objeto para o banco de dados
+                TB_REPLICACAO_PROCESSO p = new TB_REPLICACAO_PROCESSO();
+                p.setProcesso(txfProcesso.getText().trim());
+                p.setDescricao(txfDescricao.getText().trim());
+                p.setHabilitado(chkHabilitado.isSelected());
+
+                if (modoTela == ModoTela.INSERT) {
+                    dao.insert(p);
+                    JOptionPane.showMessageDialog(null, "Processo Cadastrado");
+                }
+                else if (modoTela == ModoTela.UPDATE) {
+                    if (txfId.getText().trim().isEmpty()) {
+                        JOptionPane.showMessageDialog(this, "ID não carregado para update.");
+                        return;
+                    }
+                    p.setId(Integer.parseInt(txfId.getText()));
+                    dao.update(p);
+                    JOptionPane.showMessageDialog(null, "Processo Atualizado");
+                }
+                else {
+                    JOptionPane.showMessageDialog(null, "Clique em ADICIONAR ou BUSCAR antes de salvar");
+                    return;
+                }
+
+                modoTela = ModoTela.NENHUM;
+                txfProcesso.setEnabled(false);
+                txfDescricao.setEnabled(false);
+                chkHabilitado.setSelected(false);
+                btnSalvar.setEnabled(false);
+
+            }
+            catch (Exception ex) {
+                ex.printStackTrace(); // Mostra no console qual foi o problema.
+                JOptionPane.showMessageDialog(null, "Erro ao salvar o processo!");
+            }
+        });
+
+        btnExcluir.addActionListener(e -> {
+            try {
+                if (txfId.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "ID não carregado para exclusão.");
+                    return;
+                }
+
+                int op = JOptionPane.showConfirmDialog(this, "Deseja realmente excluir o registro ?", "Excluir", JOptionPane.YES_NO_OPTION);
+                if (op == JOptionPane.YES_OPTION) return;
+
+                long id = Long.parseLong(txfId.getText());
+                dao.delete(id);
+                JOptionPane.showMessageDialog(null, "Processo Excluido com sucesso!");
+
+                modoTela = ModoTela.NENHUM;
+
+                txfId.setText("");
+                txfProcesso.setText("");
+                txfDescricao.setText("");
+                chkHabilitado.setSelected(false);
+
+                txfProcesso.setEnabled(false);
+                txfDescricao.setEnabled(false);
+                chkHabilitado.setSelected(false);
+                btnSalvar.setEnabled(false);
+                btnExcluir.setEnabled(false);
+
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Erro ao excluir registro!");
+            }
+        });
+
+        btnBuscar.addActionListener(b -> {
+
+            try {
+                ConsultaProcessoDialog dlg = new ConsultaProcessoDialog(this, dao);
+                dlg.setVisible(true);
+
+                TB_REPLICACAO_PROCESSO selecionado = dlg.getSelecionado();
+                if (selecionado != null) return;
+
+                modoTela = ModoTela.UPDATE;
+                txfId.setText(String.valueOf(selecionado.getId()));
+                txfProcesso.setText(selecionado.getProcesso());
+                txfDescricao.setText(selecionado.getDescricao());
+                chkHabilitado.setSelected(selecionado.isHabilitado());
+
+                txfProcesso.setEnabled(true);
+                txfDescricao.setEnabled(true);
+                chkHabilitado.setSelected(true);
+                btnSalvar.setEnabled(true);
+                btnExcluir.setEnabled(true);
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Erro ao buscar registro!");
+            }
+
+        });
+
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new TelaReplicacaoProcessoView().setVisible(true));
-    }
 }
+
+// EXTRA - FAZER UMA TELA DE CONSULTA PARA CADA VIEW
