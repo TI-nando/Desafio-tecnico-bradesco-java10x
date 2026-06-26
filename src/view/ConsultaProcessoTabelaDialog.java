@@ -6,6 +6,8 @@ import database.model.TB_REPLICACAO_PROCESSO_TABELA;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -36,8 +38,8 @@ public class ConsultaProcessoTabelaDialog extends JDialog {
             model.addRow(new Object[]{
                     t.getId(),
                     t.getProcesso_id(),
-                    t.getTabela_origem(),
-                    t.getTabela_destino(),
+                    t.getTable_origem(),
+                    t.getTable_destino(),
                     t.getOrdem(),
                     t.isHabilitado()
             });
@@ -80,8 +82,8 @@ public class ConsultaProcessoTabelaDialog extends JDialog {
             dispose();
         });
 
-        table.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
+        table.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
                     btnSelecionar.doClick();
                 }
