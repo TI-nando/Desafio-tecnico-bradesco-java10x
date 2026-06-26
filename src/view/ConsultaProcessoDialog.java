@@ -82,3 +82,4 @@ public class ConsultaProcessoDialog extends JDialog {
         return selecionado;
     }
 }
+
