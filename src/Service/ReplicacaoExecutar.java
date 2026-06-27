@@ -1,4 +1,4 @@
-package service;
+package Service;
 
 import database.dao.DirecaoDAO;
 import database.dao.OrigemDAO;
@@ -61,12 +61,12 @@ public class ReplicacaoExecutar {
                                 ArrayList<TB_REPLICACAO_PROCESSO_TABELA> arlTabelas = tabela.selectByProcessoHabilitado(p.getId());
                                 for (TB_REPLICACAO_PROCESSO_TABELA t : arlTabelas) {
                                     if (t != null && t.isHabilitado()) {
-                                        System.out.println("Origem: "+d.getDirecao_origem()+" <--> "+d.getDirecao_destino()+" - Tabela: "+t.getTable_origem());
-                                        ResultSet resultado = daoOrigem.SelectComandoOrigem(t.getTable_origem(), t.getDs_where());
+                                        System.out.println("Origem: "+d.getDirecao_origem()+" <--> "+d.getDirecao_destino()+" - Tabela: "+t.getTabela_origem());
+                                        ResultSet resultado = daoOrigem.SelectComandoOrigem(t.getTabela_origem(), t.getDs_where());
                                         if (resultado != null) {
                                             ResultSetMetaData metaData = resultado.getMetaData();
                                             int ln_columns = metaData.getColumnCount();
-                                            String insertSql = insertGet(t.getTable_destino(), metaData);
+                                            String insertSql = insertGet(t.getTabela_destino(), metaData);
 
                                             connDestino.setAutoCommit(false);
                                             try (PreparedStatement pstInsert = connDestino.prepareStatement(insertSql)) {
@@ -274,4 +274,3 @@ public class ReplicacaoExecutar {
 
 
 }
-

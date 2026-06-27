@@ -9,34 +9,37 @@ import java.sql.SQLException;
 
 public class TelaReplicacaoProcessoView extends JFrame {
 
-    private enum ModoTela { NENHUM, INSERT, UPDATE}
-    private ModoTela modoTela = ModoTela.NENHUM;
+    private enum ModoTela { NENHUM, INSERT, UPDATE }
+    private ModoTela modo = ModoTela.NENHUM;
 
     private final Connection conn;
     private final ReplicacaoProcessoDAO dao;
 
-    private JTextField txfId;
-    private JTextField txfProcesso;
-    private JTextField txfDescricao;
+    private JTextField txtId;
+    private JTextField txtProcesso;
+    private JTextField txtDescricao;
     private JCheckBox chkHabilitado;
 
-    private JButton btnSalvar;
-    private JButton btnAdicionar;
     private JButton btnBuscar;
+    private JButton btnAdicionar;
+    private JButton btnSalvar;
     private JButton btnExcluir;
 
-    public TelaReplicacaoProcessoView (Connection conn) throws SQLException {
+    public TelaReplicacaoProcessoView(Connection conn) throws SQLException {
 
         this.conn = conn;
         this.dao = new ReplicacaoProcessoDAO(conn);
 
-        setTitle("Cadastro De Processo");
+        setTitle("TB_REPLICACAO_PROCESSO");
         setSize(620, 320);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
-        setResizable(false);
-        setLayout(null);
 
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+        add(panel);
+
+        // Botões topo
         btnBuscar = new JButton("BUSCAR");
         btnAdicionar = new JButton("ADICIONAR");
         btnSalvar = new JButton("SALVAR");
@@ -47,178 +50,176 @@ public class TelaReplicacaoProcessoView extends JFrame {
         btnSalvar.setBounds(290, 10, 130, 30);
         btnExcluir.setBounds(430, 10, 130, 30);
 
-        getContentPane().add(btnBuscar);
-        getContentPane().add(btnAdicionar);
-        getContentPane().add(btnSalvar);
-        getContentPane().add(btnExcluir);
+        panel.add(btnBuscar);
+        panel.add(btnAdicionar);
+        panel.add(btnSalvar);
+        panel.add(btnExcluir);
 
-        // --- CAMPO: ID ---
-        JLabel lblId = new JLabel("ID");
+        // Campos
+        JLabel lblId = new JLabel("ID:");
         lblId.setBounds(10, 70, 120, 25);
-        getContentPane().add(lblId);
+        panel.add(lblId);
 
-        txfId = new JTextField();
-        txfId.setBounds(140, 70, 200, 25);
-        getContentPane().add(txfId);
+        txtId = new JTextField();
+        txtId.setBounds(140, 70, 200, 25);
+        panel.add(txtId);
 
-        // --- CAMPO: Processo ---
-        JLabel lblProcesso = new JLabel("Processo");
+        JLabel lblProcesso = new JLabel("PROCESSO:");
         lblProcesso.setBounds(10, 105, 120, 25);
-        getContentPane().add(lblProcesso);
+        panel.add(lblProcesso);
 
-        txfProcesso = new JTextField();
-        txfProcesso.setBounds(140, 105, 420, 25);
-        getContentPane().add(txfProcesso);
+        txtProcesso = new JTextField();
+        txtProcesso.setBounds(140, 105, 420, 25);
+        panel.add(txtProcesso);
 
-        // --- CAMPO: Descrição ---
-        JLabel lblDescricao = new JLabel("Descrição");
+        JLabel lblDescricao = new JLabel("DESCRIÇÃO:");
         lblDescricao.setBounds(10, 140, 120, 25);
-        getContentPane().add(lblDescricao);
+        panel.add(lblDescricao);
 
-        txfDescricao = new JTextField();
-        txfDescricao.setBounds(140, 140, 420, 25);
-        getContentPane().add(txfDescricao);
+        txtDescricao = new JTextField();
+        txtDescricao.setBounds(140, 140, 420, 25);
+        panel.add(txtDescricao);
 
-        // --- CAMPO: Habilitado ---
-        chkHabilitado = new JCheckBox("Habilitado");
-        chkHabilitado.setBounds(10, 175, 120, 25);
-        getContentPane().add(chkHabilitado);
+        JLabel lblHabilitado = new JLabel("HABILITADO:");
+        lblHabilitado.setBounds(10, 175, 120, 25);
+        panel.add(lblHabilitado);
 
-        // --- Inicia com os componentes desabilitados ---
-        txfId.setEnabled(false);
-        txfProcesso.setEnabled(false);
-        txfDescricao.setEnabled(false);
-        chkHabilitado.setSelected(false);
+        chkHabilitado = new JCheckBox("Sim");
+        chkHabilitado.setBounds(140, 175, 80, 25);
+        panel.add(chkHabilitado);
+
+        // ESTADO INICIAL
+        txtId.setEnabled(false); // ID sempre bloqueado (normalmente PK/serial)
+        txtProcesso.setEnabled(false);
+        txtDescricao.setEnabled(false);
+        chkHabilitado.setEnabled(false);
+
         btnSalvar.setEnabled(false);
         btnExcluir.setEnabled(false);
 
-        // --- Ação de adicionar ---
+        // AÇÕES
         btnAdicionar.addActionListener(e -> {
-            modoTela = ModoTela.INSERT;
+            modo = ModoTela.INSERT;
 
-            txfId.setText("");
-            txfProcesso.setText("");
-            txfDescricao.setText("");
+            txtId.setText("");
+            txtProcesso.setText("");
+            txtDescricao.setText("");
             chkHabilitado.setSelected(true);
 
-            txfId.setEnabled(true);
-            txfProcesso.setEnabled(true);
-            txfDescricao.setEnabled(true);
-            chkHabilitado.setSelected(true);
+            txtProcesso.setEnabled(true);
+            txtDescricao.setEnabled(true);
+            chkHabilitado.setEnabled(true);
+
             btnSalvar.setEnabled(true);
-            btnExcluir.setEnabled(true);
-
+            btnExcluir.setEnabled(false);
         });
 
-        // --- Ação de Salvar ---
         btnSalvar.addActionListener(e -> {
             try {
-                if (txfProcesso.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Informe o Processo");
+                // validação mínima
+                if (txtProcesso.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Informe o PROCESSO.");
                     return;
                 }
 
-                // Objeto para o banco de dados
                 TB_REPLICACAO_PROCESSO p = new TB_REPLICACAO_PROCESSO();
-                p.setProcesso(txfProcesso.getText().trim());
-                p.setDescricao(txfDescricao.getText().trim());
+                p.setProcesso(txtProcesso.getText().trim());
+                p.setDescricao(txtDescricao.getText().trim());
                 p.setHabilitado(chkHabilitado.isSelected());
 
-                if (modoTela == ModoTela.INSERT) {
+                if (modo == ModoTela.INSERT) {
                     dao.insert(p);
-                    JOptionPane.showMessageDialog(null, "Processo Cadastrado");
-                }
-                else if (modoTela == ModoTela.UPDATE) {
-                    if (txfId.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Inserido com sucesso.");
+                } else if (modo == ModoTela.UPDATE) {
+                    if (txtId.getText().trim().isEmpty()) {
                         JOptionPane.showMessageDialog(this, "ID não carregado para update.");
                         return;
                     }
-                    p.setId(Integer.parseInt(txfId.getText()));
+                    p.setId(Long.parseLong(txtId.getText().trim()));
                     dao.update(p);
-                    JOptionPane.showMessageDialog(null, "Processo Atualizado");
-                }
-                else {
-                    JOptionPane.showMessageDialog(null, "Clique em ADICIONAR ou BUSCAR antes de salvar");
+                    JOptionPane.showMessageDialog(this, "Atualizado com sucesso.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Clique em ADICIONAR ou BUSCAR antes de salvar.");
                     return;
                 }
 
-                modoTela = ModoTela.NENHUM;
-                txfProcesso.setEnabled(false);
-                txfDescricao.setEnabled(false);
-                chkHabilitado.setSelected(false);
+                // após salvar, trava campos
+                modo = ModoTela.NENHUM;
+                txtProcesso.setEnabled(false);
+                txtDescricao.setEnabled(false);
+                chkHabilitado.setEnabled(false);
                 btnSalvar.setEnabled(false);
 
-            }
-            catch (Exception ex) {
-                ex.printStackTrace(); // Mostra no console qual foi o problema.
-                JOptionPane.showMessageDialog(null, "Erro ao salvar o processo!");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Erro ao salvar: " + ex.getMessage());
             }
         });
 
         btnExcluir.addActionListener(e -> {
             try {
-                if (txfId.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "ID não carregado para exclusão.");
+                if (txtId.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Nenhum registro carregado para excluir.");
                     return;
                 }
 
-                int op = JOptionPane.showConfirmDialog(this, "Deseja realmente excluir o registro ?", "Excluir", JOptionPane.YES_NO_OPTION);
-                if (op == JOptionPane.YES_OPTION) return;
+                int op = JOptionPane.showConfirmDialog(this, "Confirma exclusão?", "Excluir",
+                        JOptionPane.YES_NO_OPTION);
 
-                long id = Long.parseLong(txfId.getText());
+                if (op != JOptionPane.YES_OPTION) return;
+
+                long id = Long.parseLong(txtId.getText().trim());
                 dao.delete(id);
-                JOptionPane.showMessageDialog(null, "Processo Excluido com sucesso!");
 
-                modoTela = ModoTela.NENHUM;
+                JOptionPane.showMessageDialog(this, "Excluído com sucesso.");
 
-                txfId.setText("");
-                txfProcesso.setText("");
-                txfDescricao.setText("");
+                // limpa e trava
+                modo = ModoTela.NENHUM;
+                txtId.setText("");
+                txtProcesso.setText("");
+                txtDescricao.setText("");
                 chkHabilitado.setSelected(false);
 
-                txfProcesso.setEnabled(false);
-                txfDescricao.setEnabled(false);
-                chkHabilitado.setSelected(false);
+                txtProcesso.setEnabled(false);
+                txtDescricao.setEnabled(false);
+                chkHabilitado.setEnabled(false);
+
                 btnSalvar.setEnabled(false);
                 btnExcluir.setEnabled(false);
 
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Erro ao excluir registro!");
+                JOptionPane.showMessageDialog(this, "Erro ao excluir: " + ex.getMessage());
             }
         });
 
-        btnBuscar.addActionListener(b -> {
-
+        btnBuscar.addActionListener(e -> {
             try {
                 ConsultaProcessoDialog dlg = new ConsultaProcessoDialog(this, dao);
                 dlg.setVisible(true);
 
                 TB_REPLICACAO_PROCESSO selecionado = dlg.getSelecionado();
-                if (selecionado != null) return;
+                if (selecionado == null) return;
 
-                modoTela = ModoTela.UPDATE;
-                txfId.setText(String.valueOf(selecionado.getId()));
-                txfProcesso.setText(selecionado.getProcesso());
-                txfDescricao.setText(selecionado.getDescricao());
+                // carrega na tela e entra em modo UPDATE
+                modo = ModoTela.UPDATE;
+
+                txtId.setText(String.valueOf(selecionado.getId()));
+                txtProcesso.setText(selecionado.getProcesso());
+                txtDescricao.setText(selecionado.getDescricao());
                 chkHabilitado.setSelected(selecionado.isHabilitado());
 
-                txfProcesso.setEnabled(true);
-                txfDescricao.setEnabled(true);
-                chkHabilitado.setSelected(true);
+                txtProcesso.setEnabled(true);
+                txtDescricao.setEnabled(true);
+                chkHabilitado.setEnabled(true);
+
                 btnSalvar.setEnabled(true);
                 btnExcluir.setEnabled(true);
-            }
-            catch (Exception ex) {
+
+            } catch (Exception ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Erro ao buscar registro!");
+                JOptionPane.showMessageDialog(this, "Erro ao buscar: " + ex.getMessage());
             }
-
         });
-
     }
-
 }
-
-// EXTRA - FAZER UMA TELA DE CONSULTA PARA CADA VIEW

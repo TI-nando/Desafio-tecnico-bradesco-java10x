@@ -178,7 +178,9 @@ public class TelaReplicacaoDirecaoView extends JFrame {
         btnSalvar.setEnabled(false);
         btnExcluir.setEnabled(false);
 
-        // ======= AÇÕES =======
+        // =========================
+        // AÇÕES
+        // =========================
 
         btnAdicionar.addActionListener(e -> {
             modo = ModoTela.INSERT;

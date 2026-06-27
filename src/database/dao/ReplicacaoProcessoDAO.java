@@ -21,8 +21,8 @@ public class ReplicacaoProcessoDAO {
     private static final String SQL_INSERT =
             "INSERT INTO TB_REPLICACAO_PROCESSO (PROCESSO, DESCRICAO, HABILITADO) VALUES (?, ?, ?)";
 
-    private static final String SQL_UPADATE =
-            "UPDATE TB_REPLICACAO_PROCESSO SET PROCESSO = ?, DESCRICAO = ?,  HABILITADO = ? WHERE ID = ?";
+    private static final String SQL_UPDATE =
+            "UPDATE TB_REPLICACAO_PROCESSO SET PROCESSO = ?, DESCRICAO = ?, HABILITADO = ? WHERE ID = ?";
 
     private static final String SQL_DELETE =
             "DELETE FROM TB_REPLICACAO_PROCESSO WHERE ID = ?";
@@ -38,7 +38,7 @@ public class ReplicacaoProcessoDAO {
         this.pstSelectAll = conn.prepareStatement(SQL_SELECT_ALL);
         this.pstSelectById = conn.prepareStatement(SQL_SELECT_BY_ID);
         this.pstInsert = conn.prepareStatement(SQL_INSERT);
-        this.pstUpdate = conn.prepareStatement(SQL_UPADATE);
+        this.pstUpdate = conn.prepareStatement(SQL_UPDATE);
         this.pstDelete = conn.prepareStatement(SQL_DELETE);
     }
 
@@ -87,4 +87,5 @@ public class ReplicacaoProcessoDAO {
         tb.setHabilitado(rs.getBoolean("HABILITADO"));
         return tb;
     }
+
 }

@@ -2,10 +2,10 @@ package database.model;
 
 public class TB_REPLICACAO_PROCESSO_TABELA {
 
-    private long  id;
+    private long id;
     private long processo_id;
-    private String table_origem;
-    private String table_destino;
+    private String tabela_origem;
+    private String tabela_destino;
     private int ordem;
     private boolean habilitado;
     private String ds_where;
@@ -30,20 +30,20 @@ public class TB_REPLICACAO_PROCESSO_TABELA {
         this.processo_id = processo_id;
     }
 
-    public String getTable_origem() {
-        return table_origem;
+    public String getTabela_origem() {
+        return tabela_origem;
     }
 
-    public void setTable_origem(String table_origem) {
-        this.table_origem = table_origem;
+    public void setTabela_origem(String tabela_origem) {
+        this.tabela_origem = tabela_origem;
     }
 
-    public String getTable_destino() {
-        return table_destino;
+    public String getTabela_destino() {
+        return tabela_destino;
     }
 
-    public void setTable_destino(String table_destino) {
-        this.table_destino = table_destino;
+    public void setTabela_destino(String tabela_destino) {
+        this.tabela_destino = tabela_destino;
     }
 
     public int getOrdem() {

@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class ProcessoTabelaDAO {
 
-    private final Connection conn;
+    private Connection conn;
 
     private static final String SQL_SELECT_BY_PROCESSO_HABILITADO =
             "SELECT * FROM TB_REPLICACAO_PROCESSO_TABELA WHERE PROCESSO_ID = ? AND HABILITADO = TRUE ORDER BY ORDEM";
@@ -71,14 +71,14 @@ public class ProcessoTabelaDAO {
     public TB_REPLICACAO_PROCESSO_TABELA selectById(long id) throws SQLException {
         pstSelectById.setLong(1, id);
         try (ResultSet rs = pstSelectById.executeQuery()) {
-            return (rs.next() ? map(rs) : null);
+            return rs.next() ? map(rs) : null;
         }
     }
 
     public void insert(TB_REPLICACAO_PROCESSO_TABELA tb) throws SQLException {
         pstInsert.setLong(1, tb.getProcesso_id());
-        pstInsert.setString(2, tb.getTable_origem());
-        pstInsert.setString(3, tb.getTable_destino());
+        pstInsert.setString(2, tb.getTabela_origem());
+        pstInsert.setString(3, tb.getTabela_destino());
         pstInsert.setInt(4, tb.getOrdem());
         pstInsert.setBoolean(5, tb.isHabilitado());
         pstInsert.setString(6, tb.getDs_where());
@@ -87,16 +87,16 @@ public class ProcessoTabelaDAO {
 
     public void update(TB_REPLICACAO_PROCESSO_TABELA tb) throws SQLException {
         pstUpdate.setLong(1, tb.getProcesso_id());
-        pstUpdate.setString(2, tb.getTable_origem());
-        pstUpdate.setString(3, tb.getTable_destino());
+        pstUpdate.setString(2, tb.getTabela_origem());
+        pstUpdate.setString(3, tb.getTabela_destino());
         pstUpdate.setInt(4, tb.getOrdem());
         pstUpdate.setBoolean(5, tb.isHabilitado());
         pstUpdate.setString(6, tb.getDs_where());
-        pstInsert.setLong(7, tb.getId());
+        pstUpdate.setLong(7, tb.getId());
         pstUpdate.executeUpdate();
     }
 
-    public void delete(long id) throws SQLException {
+    public void delete(Long id) throws SQLException {
         pstDelete.setLong(1, id);
         pstDelete.executeUpdate();
     }
@@ -105,11 +105,12 @@ public class ProcessoTabelaDAO {
         TB_REPLICACAO_PROCESSO_TABELA tb = new TB_REPLICACAO_PROCESSO_TABELA();
         tb.setId(rs.getLong("ID"));
         tb.setProcesso_id(rs.getLong("PROCESSO_ID"));
-        tb.setTable_origem(rs.getString("TABELA_ORIGEM"));
-        tb.setTable_destino(rs.getString("TABELA_DESTINO"));
+        tb.setTabela_origem(rs.getString("TABELA_ORIGEM"));
+        tb.setTabela_destino(rs.getString("TABELA_DESTINO"));
         tb.setOrdem(rs.getInt("ORDEM"));
         tb.setHabilitado(rs.getBoolean("HABILITADO"));
         tb.setDs_where(rs.getString("DS_WHERE"));
         return tb;
     }
+
 }
